@@ -1,4 +1,7 @@
 *.py[cod]
+*.swp
+
+flickr_api.yaml
 
 # C extensions
 *.so

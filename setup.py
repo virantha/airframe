@@ -16,6 +16,8 @@ if sys.argv[-1] == 'publish':
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+requirements = open('requirements.txt') as f:
+    required = f.read().splitlines()
 
 setup(
     name='airframe',
@@ -30,15 +32,14 @@ setup(
     ],
     package_dir={'airframe': 'airframe'},
     include_package_data=True,
-    install_requires=[
-    ],
-    license="BSD",
+    install_requires=required,
+    license="ASL2",
     zip_safe=False,
     keywords='airframe',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved ::  ASL License',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
