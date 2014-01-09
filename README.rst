@@ -21,3 +21,7 @@ Features
 --------
 
 * TODO
+
+Usage
+-----
+First, go to 

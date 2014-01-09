@@ -21,8 +21,6 @@ import yaml
 import flickrapi
 import urllib
 
-class MyOpener(urllib.FancyURLopener):
-     version = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Geck|  o/20071127 Firefox/3.5.0.11'    
 
 class Photo(object):
     def __init__(self, photo_element):
@@ -41,14 +39,16 @@ class Photo(object):
         tgt = os.path.join(dirname, "%s.jpg" % self.photoid)
         if cache:
             if os.path.isfile(tgt):
-                return
+                return tgt
         urllib.urlretrieve(self._construct_flickr_url(), tgt)
+        return tgt
         
 class Flickr(object):
 
     def __init__(self):
-        self.myopener = MyOpener()        
-        pass
+        self.set_keys(*self.read_keys())
+        self.get_auth2()
+        #flickrapi.set_log_level(logging.DEBUG)
 
     def read_keys(self):
         """
@@ -63,38 +63,84 @@ class Flickr(object):
         self.api_secret = secret
 
     def get_auth2(self):
+        print("Authenticating to Flickr")
         self.flickr = flickrapi.FlickrAPI(self.api_key, self.api_secret)
         (token,frob) = self.flickr.get_token_part_one(perms='read')
         if not token: raw_input("Press ENTER after you authorized this program")
         self.flickr.get_token_part_two((token,frob))
+        print("Authentication succeeded")
 
 
-    def get_recent(self,count):
-        """ Get the most recent photos
+    def get_tagged(self, tags, count, download_dir="photos"):
+        """ Get photos with the given list of tags
         """
-        x = self.flickr.people_getPhotos(api_key = self.api_key, user_id="me",per_page=15)
-        #x = self.flickr.photos_search(api_key=self.api_key,"me")
+        print ("connecting to flickr, and getting %d photos with tags %s" % (count, tags))
+        x = self.flickr.photos_search(api_key = self.api_key, user_id="me", tags=','.join(tags), per_page=count)
+        photos = self._extract_photos_from_xml(x)
+        photo_filenames = self._sync_photos(photos, download_dir)
+        print("Found %d photos" % len(photos))
+        return photo_filenames
+
+
+    def _sync_photos(self, photos, download_dir="photos", clean_up=False):
+        """
+            Connect to flickr, and for each photo in the list, download.
+            Then, if delete photos that are present locally that weren't present in the list of photos.
+
+            :returns: List of filenames downloaded
+        """
+        photo_filenames = []
+        photo_count = len(photos)
+        for i,photo in enumerate(photos):
+            print("[%d/%d] Downloading %s from flickr" % (i,photo_count,photo.photoid))
+            filename = photo.download_photo(download_dir, cache=True)
+            photo_filenames.append(filename)
+
+        # Now, go through and clean up directory if required
+        
+        if clean_up:
+            photo_file_list = ["%s.jpg" % (x.photoid) for x in photos]
+            for fn in os.listdir(download_dir):
+                full_fn = os.path.join(download_dir, fn)
+                if os.path.isfile(full_fn):
+                    if not fn in photo_file_list:
+                        print ("Flickr sync: Deleting file %s" % fn)
+                        os.remove(full_fn)
+
+        return photo_filenames
+
+    def _extract_photos_from_xml(self, xml):
         photos = []
-        for i in x.iter():
+        for i in xml.iter():
             if i.tag == 'rsp':
-                # The response header.  stat member should be 'ok'
+                # the response header.  stat member should be 'ok'
                 if i.get('stat') == 'ok':
                     continue
                 else:
-                    # Error, so just break
+                    # error, so just break
                     break
             if i.tag == 'photo':
                 photos.append(Photo(i))
-        for photo in photos:
-            print (photo._construct_flickr_url())
-            photo.download_photo("photos", cache=True)
+        return photos
+
+    def get_recent(self,count, download_dir="photos"):
+        """ get the most recent photos
+        """
+        print ("connecting to flickr, and getting most recent %d photos" % count)
+        x = self.flickr.people_getphotos(api_key = self.api_key, user_id="me",per_page=count)
+        #x = self.flickr.photos_search(api_key=self.api_key,"me")
+
+        photos = self._extract_photos_from_xml(x)
+        photo_filenames = self._sync_photos(photos, download_dir)
+        return photo_filenames
 
 
 def main():
+    #logging.basicConfig(level=logging.DEBUG, format='%(message)s')
     script = Flickr()
-    key,secret = script.read_keys()
-    script.set_keys(key,secret)
-    script.get_auth2()
+    #key,secret = script.read_keys()
+    #script.set_keys(key,secret)
+    #script.get_auth2()
     script.get_recent(10)
 
 

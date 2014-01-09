@@ -18,10 +18,22 @@ import sys, os
 import logging
 
 from version import __version__
+from flickr import Flickr
+from flashair import FlashAir
+
 class AirFrame(object):
 
     def __init__(self):
         pass
+
+    def _parse_csv_list(self, s):
+        try:
+            assert isinstance(s,str)
+            s = s.strip()
+            value_list = s.split(',')
+        except:
+            raise argparse.ArgumentTypeError("Could not parse tag list")
+        return value_list
 
     def get_options(self, argv):
         """
@@ -43,10 +55,19 @@ class AirFrame(object):
 
         p.add_argument('-v', '--verbose', action='store_true',
             default=False, dest='verbose', help='Turn on verbose mode')
+
+        p.add_argument('-n', '--number', type=int,
+            default=100, dest='number', help='Max number of photos to sync')
+
+        p.add_argument('-t', '--tags', type=self._parse_csv_list,
+                default=[], dest='tags', help='List of tags to match')
+
         args = p.parse_args(argv)
 
         self.debug = args.debug
         self.verbose = args.verbose
+        self.photo_count = args.number
+        self.photo_tags = args.tags
 
         if self.debug:
             logging.basicConfig(level=logging.DEBUG, format='%(message)s')
@@ -54,9 +75,21 @@ class AirFrame(object):
         if self.verbose:
             logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-
     def go(self, argv):
         self.get_options(argv)
+        self.flashair_ip = "192.168.9.70"
+        self.force_upload = False
+
+        # Connect to Flickr
+        logging.debug("list of tags: %s" % self.photo_tags)
+        self.flickr = Flickr()
+        if len(self.photo_tags) > 0:
+            photo_filenames = self.flickr.get_tagged(self.photo_tags, self.photo_count)
+        else:
+            photo_filenames = self.flickr.get_recent(self.photo_count)
+
+        self.flashair = FlashAir(self.flashair_ip)
+        self.flashair.sync_files_on_card_to_list(photo_filenames, self.force_upload)
 
 def main():
     script = AirFrame()

@@ -18,6 +18,7 @@ import logging
 import requests
 
 import hashlib
+import time
 
 class FlashAir(object):
     """
@@ -110,7 +111,30 @@ class FlashAir(object):
         r = requests.get(url, params=payload)
         r.raise_for_status()
 
+    def _set_write_protect(self):
+        # Change the upload directory on the card
+        url = "http://%s/upload.cgi" % self.hostname
+
+        payload = {'WRITEPROTECT': "ON"}
+        r = requests.get(url, params=payload)
+        r.raise_for_status()
+
+    def set_timestamp(self, t):
+        """
+            :param t: The time stamp
+            :type t: time.struct_time
+        """
+        fat32_time = ((t.tm_year-1980)<<25) | (t.tm_mon << 21) | (t.tm_mday << 16) | (t.tm_hour << 11) | (t.tm_min << 5) | (t.tm_sec >>1)
+
+        #print("Setting timestamp to %d (0x%0.8X)" % (fat32_time, fat32_time))
+        url = "http://%s/upload.cgi" % self.hostname
+        payload = {'FTIME': "0x%0.8X" % fat32_time}
+        r = requests.get(url, params=payload)
+        r.raise_for_status()
+
     def upload_file(self, filename):
+        # First, set the time of the photo to right now
+        self.set_timestamp(time.localtime())
         # Change the upload directory on the card
         url = "http://%s/upload.cgi" % self.hostname
 
@@ -126,12 +150,14 @@ class FlashAir(object):
         r = requests.post(url, files=files)
         r.raise_for_status()
         
-    def sync_files_on_card_to_list(self, filename_list):
+    def sync_files_on_card_to_list(self, filename_list, force=False):
         """
             Delete any files on the SD card that are not present in the list.
             Upload any files not already present on the card (based on name).
             Ignore any files already present on the card.
         """
+
+        self._set_write_protect()
         # First, get the file list on the card
         sd_file_list = self.get_file_list()
         
@@ -139,22 +165,26 @@ class FlashAir(object):
         # Delete any file not present in the filename_list
         for fn in sd_file_list:
             if not fn in hashed_local_list:
-                logging.debug("Deleting file %s on FlashAir" % fn)
-                #self.delete_file(self, fn)
+                print("Deleting file %s on FlashAir" % fn)
+                self.delete_file(fn)
 
         # Now, for any file not already present in the SD card, upload it
+        i = 0
+        n = len(filename_list)
         for fn, hash_fn in zip(filename_list, hashed_local_list):
-            if not hash_fn in sd_file_list:
-                logging.debug("Uploading file %s to %s on FlashAir" % (fn, hash_fn))
+
+            i+=1
+            if force or not hash_fn in sd_file_list:
+                print("[%d/%d] Uploading file %s to %s on FlashAir" % (i,n,fn, hash_fn))
                 self.upload_file(fn)
 
             else:
-                logging.debug("Uploading file %s to %s on FlashAir: SKIPPED(already present)" % (fn, hash_fn))
+                print("[%d/%d] Uploading file %s to %s on FlashAir: SKIPPED(already present)" % (i,n,fn, hash_fn))
 
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+    #logging.basicConfig(level=logging.DEBUG, format='%(message)s')
     script = FlashAir("192.168.9.70")
     file_list = script.get_file_list()
     #newfile = script.copy_and_rename_file("photos/11709952505.jpg")
