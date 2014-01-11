@@ -17,9 +17,9 @@ import argparse
 import sys, os
 import logging
 
-from version import __version__
-from flickr import Flickr
-from flashair import FlashAir
+from airframe.version import __version__
+from airframe.flickr import Flickr
+from airframe.flashair import FlashAir
 
 class AirFrame(object):
 
@@ -39,6 +39,8 @@ class AirFrame(object):
         """
             Parse the command-line options and set the following object properties:
 
+            I really need to convert this to use docopt!
+
             :param argv: usually just sys.argv[1:]
             :returns: Nothing
 
@@ -56,11 +58,18 @@ class AirFrame(object):
         p.add_argument('-v', '--verbose', action='store_true',
             default=False, dest='verbose', help='Turn on verbose mode')
 
+        p.add_argument('-f', '--force', action='store_true',
+            default=False, help='Force upload of all picutres to Flashair (instead of only new pictures)')
+
         p.add_argument('-n', '--number', type=int,
             default=100, dest='number', help='Max number of photos to sync')
 
         p.add_argument('-t', '--tags', type=self._parse_csv_list,
                 default=[], dest='tags', help='List of tags to match')
+
+        p.add_argument('flashair_ip', type=str,
+                        help='The ip/hostname of your FlashAir card')
+
 
         args = p.parse_args(argv)
 
@@ -68,6 +77,8 @@ class AirFrame(object):
         self.verbose = args.verbose
         self.photo_count = args.number
         self.photo_tags = args.tags
+        self.force_upload = args.force
+        self.flashair_ip = args.flashair_ip
 
         if self.debug:
             logging.basicConfig(level=logging.DEBUG, format='%(message)s')
@@ -78,7 +89,6 @@ class AirFrame(object):
     def go(self, argv):
         self.get_options(argv)
         self.flashair_ip = "192.168.9.70"
-        self.force_upload = False
 
         # Connect to Flickr
         logging.debug("list of tags: %s" % self.photo_tags)

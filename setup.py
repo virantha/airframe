@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import io
 import sys
 
 
@@ -10,20 +11,32 @@ try:
 except ImportError:
     from distutils.core import setup
 
+import airframe
+from airframe.version import __version__
+
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
-requirements = open('requirements.txt') as f:
+def read(*filenames, **kwargs):
+    encoding = kwargs.get('encoding', 'utf-8')
+    sep = kwargs.get('sep', '\n')
+    buf = []
+    for filename in filenames:
+        with io.open(filename, encoding=encoding) as f:
+            buf.append(f.read())
+    return sep.join(buf)
+
+long_description = read('README.rst', 'HISTORY.rst', 'TODO.rst')
+
+with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(
     name='airframe',
-    version='0.1.0',
+    version=__version__,
     description='Push images to a Toshiba FlashAir Wifi SD card',
-    long_description=readme + '\n\n' + history,
+    long_description=long_description,
     author='Virantha Ekanayake',
     author_email='virantha@gmail.com',
     url='https://github.com/virantha/airframe',
@@ -34,18 +47,18 @@ setup(
     include_package_data=True,
     install_requires=required,
     license="ASL2",
-    zip_safe=False,
+    zip_safe=True,
     keywords='airframe',
+    entry_points = {
+            'console_scripts': [
+                    'airframe = airframe.airframe:main'
+                ],
+        },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
         'License :: OSI Approved ::  ASL License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
 )
