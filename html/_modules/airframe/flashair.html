@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>airframe.flashair &mdash; airframe 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="airframe 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">airframe 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for airframe.flashair</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c"># Copyright 2013 Virantha Ekanayake All Rights Reserved.</span>
+<span class="c">#</span>
+<span class="c"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c"># you may not use this file except in compliance with the License.</span>
+<span class="c"># You may obtain a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c"># See the License for the specific language governing permissions and</span>
+<span class="c"># limitations under the License.</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<div class="viewcode-block" id="FlashAir"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir">[docs]</a><span class="k">class</span> <span class="nc">FlashAir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface to the REST API of the Toshiba FlashAir card.  </span>
+<span class="sd">        See the documentation to their API at:</span>
+<span class="sd">            https://flashair-developers.com/en/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">            :param hostname: IP address or hostname of the FlashAir card</span>
+<span class="sd">            :type hostname: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="n">hostname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">card_path</span> <span class="o">=</span> <span class="s">&quot;/DCIM/100__TSB&quot;</span>
+
+    <span class="k">def</span> <span class="nf">delete_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;op&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s">&quot;DIR&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">card_path</span><span class="p">}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;http://</span><span class="si">%s</span><span class="s">/command.cgi&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FlashAir.get_file_list"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.get_file_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_file_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">            The SD card returns a list that looks like the following:</span>
+
+<span class="sd">            WLANSD_FILELIST</span>
+<span class="sd">            /DCIM/100__TSB,FA000001.JPG,128751,33,16602,18432</span>
+<span class="sd">            /DCIM/100__TSB,FLASH3.JPG,370952,32,0,0</span>
+<span class="sd">            /DCIM/100__TSB,FLASH5.JPG,287034,32,0,0</span>
+<span class="sd">            /DCIM/100__TSB,FLASH6.JPG,387163,32,17295,31508</span>
+<span class="sd">            /DCIM/100__TSB,FLASH7.JPG,533998,32,17295,31520</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;op&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s">&quot;DIR&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">card_path</span><span class="p">}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;http://</span><span class="si">%s</span><span class="s">/command.cgi&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span>
+        <span class="c"># Divide the returned text by newline, and ignore the first line &quot;WLANSD_FILELIST&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">==</span><span class="s">&#39;WLANSD_FILELIST&#39;</span>
+
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="c"># Split each line by &#39;,&#39; and take the second column for the filename</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">print</span> <span class="n">filenames</span>
+        <span class="k">return</span> <span class="n">filenames</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_renamed_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c"># First, separate out the path from the filename</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">()</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="n">hash_filename</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.JPG&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+        <span class="n">hash_full_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hash_filename</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Hashed file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hash_full_filename</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">hash_full_filename</span>
+
+
+<div class="viewcode-block" id="FlashAir.copy_and_rename_file"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.copy_and_rename_file">[docs]</a>    <span class="k">def</span> <span class="nf">copy_and_rename_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :returns: hashed filename in 8.3 format with JPG extension</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hash_full_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_renamed_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c"># First, separate out the path from the filename</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">hash_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">hash_full_filename</span><span class="p">)</span>
+
+        <span class="c"># Rename the file to the hashed filename</span>
+        <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">hash_filename</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">hash_filename</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Copied </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">hash_filename</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hash_full_filename</span>
+</div>
+<div class="viewcode-block" id="FlashAir.delete_file"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.delete_file">[docs]</a>    <span class="k">def</span> <span class="nf">delete_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c"># Change the upload directory on the card</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">/upload.cgi&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;DEL&#39;</span><span class="p">:</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">card_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_set_write_protect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Change the upload directory on the card</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">/upload.cgi&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;WRITEPROTECT&#39;</span><span class="p">:</span> <span class="s">&quot;ON&quot;</span><span class="p">}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FlashAir.set_timestamp"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.set_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">set_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :param t: The time stamp</span>
+<span class="sd">            :type t: time.struct_time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fat32_time</span> <span class="o">=</span> <span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">tm_year</span><span class="o">-</span><span class="mi">1980</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">25</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tm_mon</span> <span class="o">&lt;&lt;</span> <span class="mi">21</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tm_mday</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tm_hour</span> <span class="o">&lt;&lt;</span> <span class="mi">11</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tm_min</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tm_sec</span> <span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c">#print(&quot;Setting timestamp to %d (0x%0.8X)&quot; % (fat32_time, fat32_time))</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">/upload.cgi&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FTIME&#39;</span><span class="p">:</span> <span class="s">&quot;0x</span><span class="si">%0.8X</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fat32_time</span><span class="p">}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="FlashAir.upload_file"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.upload_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c"># First, set the time of the photo to right now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_timestamp</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span>
+        <span class="c"># Change the upload directory on the card</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">/upload.cgi&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;UPDIR&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">card_path</span><span class="p">}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="c"># Now, upload the file</span>
+        <span class="n">hash_full_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_renamed_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">hash_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">hash_full_filename</span><span class="p">)</span>
+
+        <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;file&#39;</span><span class="p">:(</span><span class="n">hash_filename</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;rb&#39;</span><span class="p">))}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        </div>
+<div class="viewcode-block" id="FlashAir.sync_files_on_card_to_list"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.sync_files_on_card_to_list">[docs]</a>    <span class="k">def</span> <span class="nf">sync_files_on_card_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_list</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Delete any files on the SD card that are not present in the list.</span>
+<span class="sd">            Upload any files not already present on the card (based on name).</span>
+<span class="sd">            Ignore any files already present on the card.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_write_protect</span><span class="p">()</span>
+        <span class="c"># First, get the file list on the card</span>
+        <span class="n">sd_file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file_list</span><span class="p">()</span>
+        
+        <span class="n">hashed_local_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_renamed_filename</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filename_list</span><span class="p">]</span>
+        <span class="c"># Delete any file not present in the filename_list</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">sd_file_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">hashed_local_list</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;Deleting file </span><span class="si">%s</span><span class="s"> on FlashAir&quot;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delete_file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+        <span class="c"># Now, for any file not already present in the SD card, upload it</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">filename_list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fn</span><span class="p">,</span> <span class="n">hash_fn</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">filename_list</span><span class="p">,</span> <span class="n">hashed_local_list</span><span class="p">):</span>
+
+            <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">hash_fn</span> <span class="ow">in</span> <span class="n">sd_file_list</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">] Uploading file </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s"> on FlashAir&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span> <span class="n">hash_fn</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">] Uploading file </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s"> on FlashAir: SKIPPED(already present)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span> <span class="n">hash_fn</span><span class="p">))</span>
+
+
+</div></div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c">#logging.basicConfig(level=logging.DEBUG, format=&#39;%(message)s&#39;)</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">FlashAir</span><span class="p">(</span><span class="s">&quot;192.168.9.70&quot;</span><span class="p">)</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">get_file_list</span><span class="p">()</span>
+    <span class="c">#newfile = script.copy_and_rename_file(&quot;photos/11709952505.jpg&quot;)</span>
+    <span class="n">file_list</span> <span class="o">=</span><span class="p">[</span> <span class="s">&quot;photos/11692277333.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11692418594.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11692766176.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11692787166.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11699467984.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11699860336.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11709836005.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11709952505.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11710078243.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11710080573.jpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;photos/11710081763.jpg&quot;</span><span class="p">,]</span>
+    <span class="c">#script.upload_file(&quot;photos/11709836005.jpg&quot;)</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">sync_files_on_card_to_list</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span>
+    
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">airframe 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Virantha Ekanayake.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

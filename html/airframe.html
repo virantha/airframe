@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>airframe package &mdash; airframe 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="airframe 0.1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">airframe 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">airframe package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#airframe-airframe-module">airframe.airframe module</a></li>
+<li><a class="reference internal" href="#module-airframe.flashair">airframe.flashair module</a></li>
+<li><a class="reference internal" href="#module-airframe.flickr">airframe.flickr module</a></li>
+<li><a class="reference internal" href="#module-airframe.version">airframe.version module</a></li>
+<li><a class="reference internal" href="#module-airframe">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/airframe.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="airframe-package">
+<h1>airframe package<a class="headerlink" href="#airframe-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="airframe-airframe-module">
+<h2>airframe.airframe module<a class="headerlink" href="#airframe-airframe-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-airframe.flashair">
+<span id="airframe-flashair-module"></span><h2>airframe.flashair module<a class="headerlink" href="#module-airframe.flashair" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="airframe.flashair.FlashAir">
+<em class="property">class </em><tt class="descclassname">airframe.flashair.</tt><tt class="descname">FlashAir</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Interface to the REST API of the Toshiba FlashAir card.  
+See the documentation to their API at:</p>
+<blockquote>
+<div><a class="reference external" href="https://flashair-developers.com/en/">https://flashair-developers.com/en/</a></div></blockquote>
+<dl class="method">
+<dt id="airframe.flashair.FlashAir.copy_and_rename_file">
+<tt class="descname">copy_and_rename_file</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir.copy_and_rename_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir.copy_and_rename_file" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">hashed filename in 8.3 format with JPG extension</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flashair.FlashAir.delete_file">
+<tt class="descname">delete_file</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir.delete_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir.delete_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="airframe.flashair.FlashAir.get_file_list">
+<tt class="descname">get_file_list</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir.get_file_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir.get_file_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SD card returns a list that looks like the following:</p>
+<p>WLANSD_FILELIST
+/DCIM/100__TSB,FA000001.JPG,128751,33,16602,18432
+/DCIM/100__TSB,FLASH3.JPG,370952,32,0,0
+/DCIM/100__TSB,FLASH5.JPG,287034,32,0,0
+/DCIM/100__TSB,FLASH6.JPG,387163,32,17295,31508
+/DCIM/100__TSB,FLASH7.JPG,533998,32,17295,31520</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flashair.FlashAir.set_timestamp">
+<tt class="descname">set_timestamp</tt><big>(</big><em>t</em><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir.set_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir.set_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<em>time.struct_time</em>) &#8211; The time stamp</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flashair.FlashAir.sync_files_on_card_to_list">
+<tt class="descname">sync_files_on_card_to_list</tt><big>(</big><em>filename_list</em>, <em>force=False</em><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir.sync_files_on_card_to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir.sync_files_on_card_to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete any files on the SD card that are not present in the list.
+Upload any files not already present on the card (based on name).
+Ignore any files already present on the card.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flashair.FlashAir.upload_file">
+<tt class="descname">upload_file</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#FlashAir.upload_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.FlashAir.upload_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="airframe.flashair.main">
+<tt class="descclassname">airframe.flashair.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/airframe/flashair.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flashair.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-airframe.flickr">
+<span id="airframe-flickr-module"></span><h2>airframe.flickr module<a class="headerlink" href="#module-airframe.flickr" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="airframe.flickr.Flickr">
+<em class="property">class </em><tt class="descclassname">airframe.flickr.</tt><tt class="descname">Flickr</tt><a class="reference internal" href="_modules/airframe/flickr.html#Flickr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Flickr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="airframe.flickr.Flickr.get_auth2">
+<tt class="descname">get_auth2</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Flickr.get_auth2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Flickr.get_auth2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="airframe.flickr.Flickr.get_recent">
+<tt class="descname">get_recent</tt><big>(</big><em>count</em>, <em>download_dir='photos'</em><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Flickr.get_recent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Flickr.get_recent" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the most recent photos</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flickr.Flickr.get_tagged">
+<tt class="descname">get_tagged</tt><big>(</big><em>tags</em>, <em>count</em>, <em>download_dir='photos'</em><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Flickr.get_tagged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Flickr.get_tagged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get photos with the given list of tags</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flickr.Flickr.read_keys">
+<tt class="descname">read_keys</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Flickr.read_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Flickr.read_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the flickr API key and secret from a local file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="airframe.flickr.Flickr.set_keys">
+<tt class="descname">set_keys</tt><big>(</big><em>key</em>, <em>secret</em><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Flickr.set_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Flickr.set_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="airframe.flickr.Photo">
+<em class="property">class </em><tt class="descclassname">airframe.flickr.</tt><tt class="descname">Photo</tt><big>(</big><em>photo_element</em><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Photo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Photo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="airframe.flickr.Photo.download_photo">
+<tt class="descname">download_photo</tt><big>(</big><em>dirname</em>, <em>cache=False</em>, <em>tgt_filename=None</em><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#Photo.download_photo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.Photo.download_photo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="airframe.flickr.main">
+<tt class="descclassname">airframe.flickr.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/airframe/flickr.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#airframe.flickr.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-airframe.version">
+<span id="airframe-version-module"></span><h2>airframe.version module<a class="headerlink" href="#module-airframe.version" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-airframe">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-airframe" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">airframe 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Virantha Ekanayake.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
