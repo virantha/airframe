@@ -93,14 +93,15 @@
   <div class="section" id="airframe">
 <h1>AirFrame<a class="headerlink" href="#airframe" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="http://badge.fury.io/py/airframe"><img alt="https://badge.fury.io/py/airframe.png" src="https://badge.fury.io/py/airframe.png" /></a>
-<a class="reference external image-reference" href="https://travis-ci.org/virantha/airframe"><img alt="https://travis-ci.org/virantha/airframe.png?branch=master" src="https://travis-ci.org/virantha/airframe.png?branch=master" /></a>
 <a class="reference external image-reference" href="https://crate.io/packages/airframe?version=latest"><img alt="https://pypip.in/d/airframe/badge.png" src="https://pypip.in/d/airframe/badge.png" /></a>
 <p>Download images from an authenticated Flickr account and push
 them wirelessly to a Toshiba FlashAir Wifi SD card mounted
 in a digital photo frame.</p>
 <ul class="simple">
-<li>Free software: BSD license</li>
-<li>Documentation: <a class="reference external" href="http://airframe.rtfd.org">http://airframe.rtfd.org</a>.</li>
+<li>Free software: ASL2 license</li>
+<li>Documentation: <a class="reference external" href="http://documentup.com/virantha/airframe">http://documentup.com/virantha/airframe</a></li>
+<li>Source: <a class="reference external" href="http://github.com/virantha/airframe">http://github.com/virantha/airframe</a></li>
+<li>API docs: <a class="reference external" href="http://virantha.github.com/airframe/html">http://virantha.github.com/airframe/html</a></li>
 </ul>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
@@ -117,6 +118,16 @@ in a digital photo frame.</p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>First, go to Flickr and get a private key at <a class="reference external" href="http://www.flickr.com/services/api/misc.api_keys.html">http://www.flickr.com/services/api/misc.api_keys.html</a></p>
+<p>Then, create a directory from where you will start airframe, and create a file called flickr_api.yaml:</p>
+<blockquote>
+<div>key: &#8220;YOUR_API_KEY&#8221;
+secret: &#8220;YOUR_API_SECRET&#8221;</div></blockquote>
+<p>Then, setup your FlashAir card as described in <a href="#id1"><span class="problematic" id="id2">`this post&#8217;s &lt;http://virantha.com/2014/01/09/hacking-together-a-wifi-photo-frame-with-a-toshiba-flashair-sd-card-wireless-photo-uploads`__</span></a> &#8220;Enabling the FlashAir&#8221; section.</p>
+<p>Now, you&#8217;re ready to sync some photos!  Just run:</p>
+<blockquote>
+<div>airframe -n 100 -t photoframe YOUR_AIRFRAME_IP</div></blockquote>
+<p>This will download the 100 most recent photos tagged with &#8220;photoframe&#8221; to your AirFrame.</p>
 </div>
 </div>
 

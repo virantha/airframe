@@ -228,11 +228,19 @@
         <span class="n">sd_file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file_list</span><span class="p">()</span>
         
         <span class="n">hashed_local_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_renamed_filename</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filename_list</span><span class="p">]</span>
-        <span class="c"># Delete any file not present in the filename_list</span>
-        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">sd_file_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">hashed_local_list</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&quot;Deleting file </span><span class="si">%s</span><span class="s"> on FlashAir&quot;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">delete_file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+        <span class="c"># If force upload, we are going to delete all the files in this directory</span>
+        <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+            <span class="n">files_to_delete_list</span> <span class="o">=</span> <span class="n">sd_file_list</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Delete any file not present in the filename_list</span>
+            <span class="n">files_to_delete_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">sd_file_list</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">hashed_local_list</span><span class="p">]</span>
+
+        <span class="c">#for fn in sd_file_list:</span>
+            <span class="c">#if not fn in hashed_local_list:</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">files_to_delete_list</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Deleting file </span><span class="si">%s</span><span class="s"> on FlashAir&quot;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 
         <span class="c"># Now, for any file not already present in the SD card, upload it</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
@@ -246,8 +254,6 @@
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">print</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">] Uploading file </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s"> on FlashAir: SKIPPED(already present)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span> <span class="n">hash_fn</span><span class="p">))</span>
-
-
 </div></div>
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="c">#logging.basicConfig(level=logging.DEBUG, format=&#39;%(message)s&#39;)</span>
