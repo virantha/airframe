@@ -131,7 +131,10 @@ in a digital photo frame.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>airframe -n 100 -t photoframe YOUR_AIRFRAME_IP
 </pre></div>
 </div>
-<p>This will download the 100 most recent photos tagged with &#8220;photoframe&#8221; to your AirFrame.</p>
+<p>This will download the 100 most recent photos tagged with &#8220;photoframe&#8221; to your
+AirFrame.  The image files will be cached in a sub-directory called
+<tt class="file docutils literal"><span class="pre">.airframe</span></tt> in the location you invoked airframe from, so as long as you rerun
+from the same directory, the script will only download new files from Flickr.</p>
 </div>
 </div>
 
