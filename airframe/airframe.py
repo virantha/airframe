@@ -17,9 +17,9 @@ import argparse
 import sys, os
 import logging
 
-from airframe.version import __version__
-from airframe.flickr import Flickr
-from airframe.flashair import FlashAir
+from .version import __version__
+from .flickr import Flickr
+from .flashair import FlashAir
 
 class AirFrame(object):
 
@@ -87,16 +87,16 @@ class AirFrame(object):
             logging.basicConfig(level=logging.INFO, format='%(message)s')
 
     def go(self, argv):
+        self.download_dir = ".airframe"
         self.get_options(argv)
-        self.flashair_ip = "192.168.9.70"
 
         # Connect to Flickr
         logging.debug("list of tags: %s" % self.photo_tags)
         self.flickr = Flickr()
         if len(self.photo_tags) > 0:
-            photo_filenames = self.flickr.get_tagged(self.photo_tags, self.photo_count)
+            photo_filenames = self.flickr.get_tagged(self.photo_tags, self.photo_count, download_dir=self.download_dir)
         else:
-            photo_filenames = self.flickr.get_recent(self.photo_count)
+            photo_filenames = self.flickr.get_recent(self.photo_count,download_dir=self.download_dir)
 
         self.flashair = FlashAir(self.flashair_ip)
         self.flashair.sync_files_on_card_to_list(photo_filenames, self.force_upload)
