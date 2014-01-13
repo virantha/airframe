@@ -162,11 +162,19 @@ class FlashAir(object):
         sd_file_list = self.get_file_list()
         
         hashed_local_list = [os.path.basename(self._get_renamed_filename(x)) for x in filename_list]
-        # Delete any file not present in the filename_list
-        for fn in sd_file_list:
-            if not fn in hashed_local_list:
-                print("Deleting file %s on FlashAir" % fn)
-                self.delete_file(fn)
+
+        # If force upload, we are going to delete all the files in this directory
+        if force:
+            files_to_delete_list = sd_file_list
+        else:
+            # Delete any file not present in the filename_list
+            files_to_delete_list = [ fn for fn in sd_file_list if not fn in hashed_local_list]
+
+        #for fn in sd_file_list:
+            #if not fn in hashed_local_list:
+        for fn in files_to_delete_list:
+            print("Deleting file %s on FlashAir" % fn)
+            self.delete_file(fn)
 
         # Now, for any file not already present in the SD card, upload it
         i = 0
@@ -180,8 +188,6 @@ class FlashAir(object):
 
             else:
                 print("[%d/%d] Uploading file %s to %s on FlashAir: SKIPPED(already present)" % (i,n,fn, hash_fn))
-
-
 
 def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(message)s')

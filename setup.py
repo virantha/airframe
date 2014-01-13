@@ -6,10 +6,7 @@ import io
 import sys
 
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 import airframe
 from airframe.version import __version__
@@ -29,6 +26,8 @@ def read(*filenames, **kwargs):
 
 long_description = read('README.rst', 'HISTORY.rst', 'TODO.rst')
 
+packages = find_packages(exclude="tests")
+
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
@@ -37,13 +36,10 @@ setup(
     version=__version__,
     description='Push images to a Toshiba FlashAir Wifi SD card',
     long_description=long_description,
-    author='Virantha Ekanayake',
+    author='Virantha N. Ekanayake',
     author_email='virantha@gmail.com',
     url='https://github.com/virantha/airframe',
-    packages=[
-        'airframe',
-    ],
-    package_dir={'airframe': 'airframe'},
+    packages=packages,
     include_package_data=True,
     install_requires=required,
     license="ASL2",
