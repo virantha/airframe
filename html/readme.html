@@ -113,18 +113,23 @@ in a digital photo frame.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div>pip install airframe</div></blockquote>
+<dl class="docutils">
+<dt>::</dt>
+<dd>pip install airframe</dd>
+</dl>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>First, go to Flickr and get a private key at <a class="reference external" href="http://www.flickr.com/services/api/misc.api_keys.html">http://www.flickr.com/services/api/misc.api_keys.html</a></p>
 <p>Then, create a directory from where you will start airframe, and create a file called flickr_api.yaml:</p>
+<div class="highlight-python"><pre>key: "YOUR_API_KEY"
+secret: "YOUR_API_SECRET"</pre>
+</div>
 <p>Then, setup your FlashAir card as described in <a class="reference external" href="http://virantha.com/2014/01/09/hacking-together-a-wifi-photo-frame-with-a-toshiba-flashair-sd-card-wireless-photo-uploads">this post&#8217;s</a>
 &#8220;Enabling the FlashAir&#8221; section.</p>
 <p>Now, you&#8217;re ready to sync some photos!  Just run:</p>
-<blockquote>
-<div>airframe -n 100 -t photoframe YOUR_AIRFRAME_IP</div></blockquote>
+<div class="highlight-python"><pre>airframe -n 100 -t photoframe YOUR_AIRFRAME_IP</pre>
+</div>
 <p>This will download the 100 most recent photos tagged with &#8220;photoframe&#8221; to your AirFrame.</p>
 </div>
 </div>
