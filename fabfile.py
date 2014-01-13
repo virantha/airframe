@@ -31,7 +31,7 @@ def push_docs():
         print("Running sphinx in docs/ and building to ~/dev/githubpages/airframe")
         local("make clean")
         local("make html")
-        local("cp -R ../test/htmlcov %s/html/testing" % githubpages)
+        #local("cp -R ../test/htmlcov %s/html/testing" % githubpages)
     with lcd(githubpages):
         local("git add .")
         local('git commit -am "doc update"')
