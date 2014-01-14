@@ -1,1 +1,3 @@
-requests >= 2.1
+PyYAML>=3.10
+flickrapi>=1.4.2
+requests>=2.1.0

@@ -59,7 +59,7 @@ class AirFrame(object):
             default=False, dest='verbose', help='Turn on verbose mode')
 
         p.add_argument('-f', '--force', action='store_true',
-            default=False, help='Force upload of all picutres to Flashair (instead of only new pictures)')
+            default=False, help='Force upload of all pictures to Flashair (instead of only new pictures)')
 
         p.add_argument('-n', '--number', type=int,
             default=100, dest='number', help='Max number of photos to sync')
