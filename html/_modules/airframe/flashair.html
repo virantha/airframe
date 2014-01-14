@@ -184,6 +184,9 @@
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;WRITEPROTECT&#39;</span><span class="p">:</span> <span class="s">&quot;ON&quot;</span><span class="p">}</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
         <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&quot;SUCCESS&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Could not put card into host-write-protect mode&quot;</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="FlashAir.set_timestamp"><a class="viewcode-back" href="../../airframe.html#airframe.flashair.FlashAir.set_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">set_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

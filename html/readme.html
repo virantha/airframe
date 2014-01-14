@@ -138,9 +138,9 @@ AirFrame.</p>
 <p class="last">Any other image files in the FlashAir upload directory will be deleted, so make sure you backup anything you want to keep from your SD card.</p>
 </div>
 <p>The image files from Flickr will be cached in a sub-directory called
-<tt class="file docutils literal"><span class="pre">.airframe</span></tt> in the location you invoked airframe from, so as long as you rerun
+<tt class="docutils literal"><span class="pre">.airframe</span></tt> in the location you invoked airframe from, so as long as you rerun
 from the same directory, the script will only download new files from Flickr.  If you want to
-redownload all the files from scratch, just <strong class="command">rm .airframe</strong> these files.</p>
+redownload all the files from scratch, just <tt class="docutils literal"><span class="pre">rm</span> <span class="pre">.airframe</span></tt> these files.</p>
 <p>The script will also only upload new images to the FlashAir card, and ignore any files that are
 already present on the card.  If you want to force a clean upload, do the following:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>airframe -n 100 -t photoframe -f YOUR_AIRFRAME_IP
