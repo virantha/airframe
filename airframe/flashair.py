@@ -118,6 +118,9 @@ class FlashAir(object):
         payload = {'WRITEPROTECT': "ON"}
         r = requests.get(url, params=payload)
         r.raise_for_status()
+        if not "SUCCESS" in r.content:
+            print("Could not put card into host-write-protect mode")
+
 
     def set_timestamp(self, t):
         """

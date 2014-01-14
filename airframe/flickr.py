@@ -48,7 +48,6 @@ class Flickr(object):
     def __init__(self):
         self.set_keys(*self.read_keys())
         self.get_auth2()
-        #flickrapi.set_log_level(logging.DEBUG)
 
     def read_keys(self):
         """

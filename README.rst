@@ -1,4 +1,3 @@
-===============================
 AirFrame
 ===============================
 
@@ -60,9 +59,9 @@ AirFrame.
 .. warning:: Any other image files in the FlashAir upload directory will be deleted, so make sure you backup anything you want to keep from your SD card.
 
 The image files from Flickr will be cached in a sub-directory called
-:file:`.airframe` in the location you invoked airframe from, so as long as you rerun
+``.airframe`` in the location you invoked airframe from, so as long as you rerun
 from the same directory, the script will only download new files from Flickr.  If you want to
-redownload all the files from scratch, just :command:`rm .airframe` these files.
+redownload all the files from scratch, just ``rm .airframe`` these files.
 
 The script will also only upload new images to the FlashAir card, and ignore any files that are
 already present on the card.  If you want to force a clean upload, do the following:

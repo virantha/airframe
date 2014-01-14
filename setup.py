@@ -52,7 +52,6 @@ setup(
         },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'License :: OSI Approved ::  ASL License',
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
     ],
