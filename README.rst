@@ -7,9 +7,9 @@ AirFrame
 .. image:: https://pypip.in/d/airframe/badge.png
         :target: https://crate.io/packages/airframe?version=latest
 
-Download images from an authenticated Flickr account and push
-them wirelessly to a Toshiba FlashAir Wifi SD card mounted
-in a digital photo frame.
+Download images from an authenticated Flickr account (or local filesystem) and 
+push them wirelessly to a Toshiba FlashAir Wifi SD card mounted in a digital 
+photo frame.
 
 * Free software: ASL2 license
 * Documentation: http://documentup.com/virantha/airframe
@@ -21,6 +21,7 @@ Features
 
 * Authenticates to Flickr to get your private photos
 * Only downloads photos with specified tags
+* Alternativly, can sync files from a local directory
 * Caches and syncs the photos to the Wifi SD card
 
 
@@ -71,4 +72,12 @@ already present on the card.  If you want to force a clean upload, do the follow
     $ airframe -n 100 -t photoframe -f YOUR_AIRFRAME_IP
 
 This will delete all images already on the card, and upload every image again.
+
+Alternatively, you can sync files directly from your local computer by pointing
+the script at a directory of ``.jpg`` files:
+
+.. code-block:: bash
+    $ airframe -l /path/to/photos YOUR_AIRFRAME_IP
+
+Note: other flags are ignored in this mode.
 
