@@ -12,9 +12,8 @@ push them wirelessly to a Toshiba FlashAir Wifi SD card mounted in a digital
 photo frame.
 
 * Free software: ASL2 license
-* Documentation: http://documentup.com/virantha/airframe
+* Documentation: http://virantha.github.io/airframe/html
 * Source: http://github.com/virantha/airframe
-* API docs: http://virantha.github.com/airframe/html
 
 Features
 --------
