@@ -203,9 +203,9 @@
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../airframe.html#airframe.flickr.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="c">#logging.basicConfig(level=logging.DEBUG, format=&#39;%(message)s&#39;)</span>
     <span class="n">script</span> <span class="o">=</span> <span class="n">Flickr</span><span class="p">()</span>
-    <span class="c">#key,secret = script.read_keys()</span>
-    <span class="c">#script.set_keys(key,secret)</span>
-    <span class="c">#script.get_auth2()</span>
+    <span class="n">key</span><span class="p">,</span><span class="n">secret</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">read_keys</span><span class="p">()</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">set_keys</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">secret</span><span class="p">)</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">get_auth2</span><span class="p">()</span>
     <span class="n">script</span><span class="o">.</span><span class="n">get_recent</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
 </div>

@@ -82,10 +82,13 @@
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">.version</span> <span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span> <span class="nn">.flickr</span> <span class="kn">import</span> <span class="n">Flickr</span>
-<span class="kn">from</span> <span class="nn">.flashair</span> <span class="kn">import</span> <span class="n">FlashAir</span>
+
+<span class="kn">from</span> <span class="nn">version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">flickr</span> <span class="kn">import</span> <span class="n">Flickr</span>
+<span class="kn">from</span> <span class="nn">flashair</span> <span class="kn">import</span> <span class="n">FlashAir</span>
 
 <div class="viewcode-block" id="AirFrame"><a class="viewcode-back" href="../../airframe.html#airframe.airframe.AirFrame">[docs]</a><span class="k">class</span> <span class="nc">AirFrame</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -114,9 +117,12 @@
 <span class="sd">            :ivar verbose: Enable verbose logging</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-                <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Push flickr pictures to a Toshiba FlashAir automatically&quot;</span><span class="p">,</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Push pictures from Flickr or local files to a Toshiba FlashAir automatically&quot;</span><span class="p">,</span>
                 <span class="n">epilog</span> <span class="o">=</span> <span class="s">&quot;AirFrame version </span><span class="si">%s</span><span class="s"> (Copyright 2014 Virantha Ekanayake)&quot;</span> <span class="o">%</span> <span class="n">__version__</span><span class="p">,</span>
                 <span class="p">)</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-l&#39;</span><span class="p">,</span> <span class="s">&#39;--local-dir&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Upload all .jpg files from this directory instead of Flickr&#39;</span><span class="p">)</span>
 
         <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-d&#39;</span><span class="p">,</span> <span class="s">&#39;--debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;debug&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;Turn on debugging&#39;</span><span class="p">)</span>
@@ -125,7 +131,7 @@
             <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;Turn on verbose mode&#39;</span><span class="p">)</span>
 
         <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;--force&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;Force upload of all picutres to Flashair (instead of only new pictures)&#39;</span><span class="p">)</span>
+            <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;Force upload of all pictures to Flashair (instead of only new pictures)&#39;</span><span class="p">)</span>
 
         <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;number&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;Max number of photos to sync&#39;</span><span class="p">)</span>
@@ -145,6 +151,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">photo_tags</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tags</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_upload</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">force</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flashair_ip</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">flashair_ip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">local_dir</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">)</span>
@@ -152,10 +159,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="AirFrame.go"><a class="viewcode-back" href="../../airframe.html#airframe.airframe.AirFrame.go">[docs]</a>    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argv</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span> <span class="o">=</span> <span class="s">&quot;.airframe&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_options</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
-
+<div class="viewcode-block" id="AirFrame.flickr_mode"><a class="viewcode-back" href="../../airframe.html#airframe.airframe.AirFrame.flickr_mode">[docs]</a>    <span class="k">def</span> <span class="nf">flickr_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c"># Connect to Flickr</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;list of tags: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo_tags</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flickr</span> <span class="o">=</span> <span class="n">Flickr</span><span class="p">()</span>
@@ -163,6 +167,35 @@
             <span class="n">photo_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flickr</span><span class="o">.</span><span class="n">get_tagged</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo_tags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo_count</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">photo_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flickr</span><span class="o">.</span><span class="n">get_recent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo_count</span><span class="p">,</span><span class="n">download_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">photo_filenames</span>
+</div>
+<div class="viewcode-block" id="AirFrame.local_dir_mode"><a class="viewcode-back" href="../../airframe.html#airframe.airframe.AirFrame.local_dir_mode">[docs]</a>    <span class="k">def</span> <span class="nf">local_dir_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Copy all the files in the named directory to the cache (download_dir).</span>
+        <span class="c"># completely replaces both the local cached files and the ones on the </span>
+        <span class="c"># wifi sd card</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s">&#39;/*.[jJ][pP][gG]&#39;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_dir</span> <span class="o">+</span> <span class="n">pattern</span>
+        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removing existing cache dir: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">)</span>
+        
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;caching files from: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">match</span><span class="p">)</span>
+        <span class="n">photo_filenames</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">photo_filenames</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;copy </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">))</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">photo_filenames</span>    
+</div>
+<div class="viewcode-block" id="AirFrame.go"><a class="viewcode-back" href="../../airframe.html#airframe.airframe.AirFrame.go">[docs]</a>    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argv</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_dir</span> <span class="o">=</span> <span class="s">&quot;.airframe&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_options</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_dir</span><span class="p">:</span>
+            <span class="n">photo_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_dir_mode</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">photo_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flickr_mode</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flashair</span> <span class="o">=</span> <span class="n">FlashAir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flashair_ip</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flashair</span><span class="o">.</span><span class="n">sync_files_on_card_to_list</span><span class="p">(</span><span class="n">photo_filenames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_upload</span><span class="p">)</span>

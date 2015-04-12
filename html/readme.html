@@ -94,9 +94,9 @@
 <h1>AirFrame<a class="headerlink" href="#airframe" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="http://badge.fury.io/py/airframe"><img alt="https://badge.fury.io/py/airframe.png" src="https://badge.fury.io/py/airframe.png" /></a>
 <a class="reference external image-reference" href="https://crate.io/packages/airframe?version=latest"><img alt="https://pypip.in/d/airframe/badge.png" src="https://pypip.in/d/airframe/badge.png" /></a>
-<p>Download images from an authenticated Flickr account and push
-them wirelessly to a Toshiba FlashAir Wifi SD card mounted
-in a digital photo frame.</p>
+<p>Download images from an authenticated Flickr account (or local filesystem) and
+push them wirelessly to a Toshiba FlashAir Wifi SD card mounted in a digital
+photo frame.</p>
 <ul class="simple">
 <li>Free software: ASL2 license</li>
 <li>Documentation: <a class="reference external" href="http://documentup.com/virantha/airframe">http://documentup.com/virantha/airframe</a></li>
@@ -108,6 +108,7 @@ in a digital photo frame.</p>
 <ul class="simple">
 <li>Authenticates to Flickr to get your private photos</li>
 <li>Only downloads photos with specified tags</li>
+<li>Alternativly, can sync files from a local directory</li>
 <li>Caches and syncs the photos to the Wifi SD card</li>
 </ul>
 </div>
@@ -147,6 +148,9 @@ already present on the card.  If you want to force a clean upload, do the follow
 </pre></div>
 </div>
 <p>This will delete all images already on the card, and upload every image again.</p>
+<p>Alternatively, you can sync files directly from your local computer by pointing
+the script at a directory of <tt class="docutils literal"><span class="pre">.jpg</span></tt> files:</p>
+<p>Note: other flags are ignored in this mode.</p>
 </div>
 </div>
 
