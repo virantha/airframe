@@ -20,9 +20,9 @@ import glob
 import shutil
 
 
-from .version import __version__
-from .flickr import Flickr
-from .flashair import FlashAir
+from version import __version__
+from flickr import Flickr
+from flashair import FlashAir
 
 class AirFrame(object):
 

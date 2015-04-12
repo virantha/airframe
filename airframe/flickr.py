@@ -137,9 +137,9 @@ class Flickr(object):
 def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(message)s')
     script = Flickr()
-    #key,secret = script.read_keys()
-    #script.set_keys(key,secret)
-    #script.get_auth2()
+    key,secret = script.read_keys()
+    script.set_keys(key,secret)
+    script.get_auth2()
     script.get_recent(10)
 
 
