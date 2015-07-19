@@ -22,6 +22,7 @@ import yaml
 import facebook
 import urllib
 import urlparse
+from operator import itemgetter
 
 
 SAFE_CHARS = '-_() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -48,7 +49,7 @@ class FacebookPhotos(object):
     def __init__(self):
         self.set_keys(*self.read_keys())
         #self.get_auth2()
-        self.refresh_token()
+#        self.refresh_token()
 
     def read_keys(self):
         """
@@ -63,7 +64,6 @@ class FacebookPhotos(object):
         self.app_secret = app_secret
         self.client_token = client_token
         self.access_token = access_token
-        print app_id, app_secret, client_token, access_token
 
     def write_keys(self):
         data = {'app_id': self.app_id, 'app_secret': self.app_secret, 'client_token': self.client_token, 'access_token': self.access_token}
@@ -102,7 +102,7 @@ class FacebookPhotos(object):
         photo_filenames = []
         photo_count = len(photos)
         for i,photo in enumerate(photos):
-            print("[%d/%d] Downloading %s from Facebook" % (i,photo_count,photo.photoid))
+            print("[%d/%d] Downloading %s from Facebook" % (i+1, photo_count, photo.photoid))
             filename = photo.download_photo(download_dir, cache=True)
             photo_filenames.append(filename)
 
@@ -124,15 +124,22 @@ class FacebookPhotos(object):
         err = []
         photos = []
         for d in dat:
-            if 'source' not in d:
-                err.append(d)
-                continue
-            source = d['source']
             if 'id' not in d:
                 err.append(d)
                 continue
             photoid = d['id']
-            photos.append(Photo({'source': source, 'photoid': photoid}))
+            
+            if 'source' not in d:
+                err.append(d)
+                continue
+            source = d['source']
+            
+            if 'images' not in d:
+                err.append(d)
+                continue
+            images = d['images']
+            images.sort(key=itemgetter('width'), reverse=True)
+            photos.append(Photo({'source': images[0]['source'], 'photoid': photoid}))
         if err:
             print '%d errors.' % len(err)
             print err
@@ -144,11 +151,11 @@ class FacebookPhotos(object):
         """Fetch the data using Facebook's Graph API"""
         photo_filenames = []
         graph = facebook.GraphAPI(self.access_token)
-#        url = 'me/photos/uploaded' #% id
-        url = 'me/photos/'
+        url = 'me/photos/uploaded'
+#        url = 'me/photos/'
         photos = []
 
-        args = {'fields': ['source', 'photoid'], 'limit': count}
+        args = {'fields': ['source', 'photoid', 'images'], 'limit': count}
         res = graph.request(url, args)
         photos.extend(self._extract_photos_from_json(res['data']))
     
@@ -169,9 +176,6 @@ class FacebookPhotos(object):
 def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(message)s')
     script = FacebookPhotos()
-#    key,secret = script.read_keys()
-#    script.set_keys(key,secret)
-#    script.get_auth2()
     script.get_recent(10)
 
 
