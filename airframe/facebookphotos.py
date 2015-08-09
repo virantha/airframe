@@ -48,8 +48,7 @@ class FacebookPhotos(object):
 
     def __init__(self):
         self.set_keys(*self.read_keys())
-        #self.get_auth2()
-#        self.refresh_token()
+        self.refresh_token()
 
     def read_keys(self):
         """
@@ -70,10 +69,6 @@ class FacebookPhotos(object):
         with open('facebook_api.yaml', 'w') as outfile:
             outfile.write(yaml.dump(data, default_flow_style=False))
             outfile.close()
-
-#    def get_auth2(self):
-#        self.token = facebook.get_app_access_token(self.app_id, self.app_secret)
-#        print self.token
  
     def refresh_token(self):
         new_token = None
