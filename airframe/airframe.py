@@ -153,8 +153,10 @@ class AirFrame(object):
         size = [int(x) for x in tuple(size)]
         for infile in photo_filenames:
             im = Image.open(infile)
-            im.thumbnail(size, Image.ANTIALIAS)
-            im.save(infile)
+            if im.size[0] > size[0] or im.size[1] > size[1]:
+                im.thumbnail(size, Image.ANTIALIAS)
+                im.save(infile)
+            im.close()
 
 
     def go(self, argv):
