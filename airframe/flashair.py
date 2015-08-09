@@ -54,7 +54,7 @@ class FlashAir(object):
         payload = {"op":100, "DIR":self.card_path}
         r = requests.get("http://%s/command.cgi" % self.hostname, params=payload)
         r.raise_for_status()
-        print r.text
+        logging.debug("Response: %s" % r.text)
         # Divide the returned text by newline, and ignore the first line "WLANSD_FILELIST"
         lines = r.text.split('\n')
         assert lines[0].strip()=='WLANSD_FILELIST'
@@ -67,7 +67,7 @@ class FlashAir(object):
                 filename = values[1].strip()
                 filenames.append(filename)
 
-        print filenames
+        logging.debug("File names: %s" % filenames)
         return filenames
 
     def _get_renamed_filename(self, filename):
