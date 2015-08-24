@@ -23,6 +23,8 @@ import shutil
 from version import __version__
 from flickr import Flickr
 from flashair import FlashAir
+from facebookphotos import FacebookPhotos
+from PIL import Image
 
 class AirFrame(object):
 
@@ -51,12 +53,21 @@ class AirFrame(object):
             :ivar verbose: Enable verbose logging
         """
         p = argparse.ArgumentParser(
-                description = "Push pictures from Flickr or local files to a Toshiba FlashAir automatically",
+                description = "Push pictures from Flickr, Facebook or local files to a Toshiba FlashAir automatically",
                 epilog = "AirFrame version %s (Copyright 2014 Virantha Ekanayake)" % __version__,
                 )
 
+        p.add_argument('-b', '--facebook', action='store_true',
+            default=False, help='Upload pictures from Flickr to Flashair')
+
+        p.add_argument('-r', '--flickr', action='store_true',
+            default=True, help='Upload pictures from Facebook to Flashair (default)')
+
         p.add_argument('-l', '--local-dir', type=str,
-            help='Upload all .jpg files from this directory instead of Flickr')
+            help='Upload all .jpg files from this directory instead of Flickr or Facebook')
+        
+        p.add_argument('-s', '--resize', type=str,
+            help='Resize all images to fit in this box (e.g. 1024x768) before uploading them to Flashair')
 
         p.add_argument('-d', '--debug', action='store_true',
             default=False, dest='debug', help='Turn on debugging')
@@ -71,7 +82,7 @@ class AirFrame(object):
             default=100, dest='number', help='Max number of photos to sync')
 
         p.add_argument('-t', '--tags', type=self._parse_csv_list,
-                default=[], dest='tags', help='List of tags to match')
+                default=[], dest='tags', help='List of Flickr tags to match')
 
         p.add_argument('flashair_ip', type=str,
                         help='The ip/hostname of your FlashAir card')
@@ -86,6 +97,9 @@ class AirFrame(object):
         self.force_upload = args.force
         self.flashair_ip = args.flashair_ip
         self.local_dir = args.local_dir
+        self.resize = args.resize
+        self.facebook = args.facebook
+        self.flickr = args.flickr
 
         if self.debug:
             logging.basicConfig(level=logging.DEBUG, format='%(message)s')
@@ -101,6 +115,17 @@ class AirFrame(object):
             photo_filenames = self.flickr.get_tagged(self.photo_tags, self.photo_count, download_dir=self.download_dir)
         else:
             photo_filenames = self.flickr.get_recent(self.photo_count,download_dir=self.download_dir)
+        return photo_filenames
+
+    def facebook_mode(self):
+        # Connect to Facebook
+        logging.debug("list of tags: %s" % self.photo_tags)
+        self.facebookphotos = FacebookPhotos()
+#        if len(self.photo_tags) > 0:
+#            photo_filenames = self.flickr.get_tagged(self.photo_tags, self.photo_count, download_dir=self.download_dir)
+#        else:
+#            photo_filenames = self.flickr.get_recent(self.photo_count,download_dir=self.download_dir)
+        photo_filenames = self.facebookphotos.get_recent(self.photo_count,download_dir=self.download_dir)
         return photo_filenames
 
     def local_dir_mode(self):
@@ -122,14 +147,31 @@ class AirFrame(object):
             shutil.copy(filename, self.download_dir)
         return photo_filenames    
 
+    def resize_pictures(self, photo_filenames):
+        print 'Resizing images...'
+        size = self.resize.split('x')
+        size = [int(x) for x in tuple(size)]
+        for infile in photo_filenames:
+            im = Image.open(infile)
+            if im.size[0] > size[0] or im.size[1] > size[1]:
+                im.thumbnail(size, Image.ANTIALIAS)
+                im.save(infile)
+            im.close()
+
+
     def go(self, argv):
         self.download_dir = ".airframe"
         self.get_options(argv)
 
         if self.local_dir:
             photo_filenames = self.local_dir_mode()
+        elif self.facebook:
+            photo_filenames = self.facebook_mode()
         else:
             photo_filenames = self.flickr_mode()
+
+        if self.resize:
+            self.resize_pictures(photo_filenames)
 
         self.flashair = FlashAir(self.flashair_ip)
         self.flashair.sync_files_on_card_to_list(photo_filenames, self.force_upload)
